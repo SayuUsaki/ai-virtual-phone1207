@@ -60,7 +60,7 @@ export async function generateEmbedding(
     const headers = buildRequestHeaders(apiConfig, baseUrl);
 
     try {
-        const res = await llmfetch(url, {
+        const res = await llmFetch(url, {
             method: "POST",
             headers,
             body: JSON.stringify({
