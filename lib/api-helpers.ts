@@ -200,7 +200,7 @@ export async function simpleLLMCall(
         const bodyTokenEstimate = Math.ceil(bodySize / 3);
         console.log("[simpleLLMCall] Request:", { url: fetchUrl.slice(0, 80), bodySize, bodyTokenEstimate, model: config.defaultModel });
 
-        const res = await llmfetch(fetchUrl, { method: "POST", headers, body, signal: options?.signal });
+        const res = await llmFetch(fetchUrl, { method: "POST", headers, body, signal: options?.signal });
 
         if (!res.ok) {
             const errText = await res.text().catch(() => "");
