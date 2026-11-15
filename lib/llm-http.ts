@@ -1,14 +1,31 @@
 // lib/llm-http.ts
-// LLM 请求的统一 fetch 出口。所有走 buildProviderRequest 的调用点统一经它发请求：
-//  - 普通 provider：浏览器直连（现状不变）；
-//  - serverProxy 标记（OpenCode 网关）：改发本站 /api/llm-proxy，由服务端转发，
-//    绕过 opencode.ai 未开放浏览器 CORS 的问题。
+// LLM 请求的统一 fetch 出口。
+//  - 普通 provider：浏览器直连；
+//  - serverProxy 标记（OpenCode 网关）：改发本站 /api/llm-proxy；
+//  - 灵眸（api.lmuai.ai）：浏览器无法跨域直连，同样走 /api/llm-proxy 转发。
 
 import type { LlmRequestPayload } from "./llm-provider-adapter";
 
 export type FetchLlmPayloadOptions = {
     signal?: AbortSignal;
 };
+
+const PROXY_PREFIXES = ["https://api.lmuai.ai/"];
+
+export function llmFetch(url: string, init: RequestInit = {}): Promise<Response> {
+    if (!PROXY_PREFIXES.some((p) => url.startsWith(p))) return fetch(url, init);
+    return fetch("/api/llm-proxy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            url,
+            method: init.method || "GET",
+            headers: init.headers,
+            body: typeof init.body === "string" ? init.body : undefined,
+        }),
+        signal: init.signal,
+    });
+}
 
 export function fetchLlmPayload(
     payload: LlmRequestPayload,
@@ -27,7 +44,7 @@ export function fetchLlmPayload(
             signal: options.signal,
         });
     }
-    return fetch(payload.url, {
+    return llmFetch(payload.url, {
         method: "POST",
         headers: payload.headers,
         body: bodyText,
