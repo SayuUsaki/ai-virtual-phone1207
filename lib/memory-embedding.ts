@@ -1,6 +1,6 @@
 // lib/memory-embedding.ts
 // Embedding generation + vector/keyword search for memory retrieval.
-
+import { llmFetch } from "./llm-http";
 import type { ApiConfig } from "./settings-types";
 import type { MemoryEntry, MemorySearchResult } from "./memory-types";
 import { determineBaseUrl, buildRequestHeaders } from "./api-helpers";
@@ -60,7 +60,7 @@ export async function generateEmbedding(
     const headers = buildRequestHeaders(apiConfig, baseUrl);
 
     try {
-        const res = await fetch(url, {
+        const res = await llmfetch(url, {
             method: "POST",
             headers,
             body: JSON.stringify({
