@@ -72,7 +72,7 @@ async function simpleLLMStreamCall(
     };
 
     try {
-        const res = await llmfetch(request.url, {
+        const res = await llmFetch(request.url, {
             method: "POST",
             headers: request.headers,
             body: request.body,
