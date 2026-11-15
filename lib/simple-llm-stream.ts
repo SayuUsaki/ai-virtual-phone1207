@@ -8,7 +8,7 @@
 // 退回规则：什么都没收到就失败（接口或中转不支持 SSE、HTTP 报错、流里没有任何增量等），
 // 退回 simpleLLMCall 再请求一次，报错信息和以前完全一样；
 // 已经收到正文或思考内容后连接断开，或调用方主动中止，按失败返回，不再重试（避免同一次长生成计费两次）。
-
+import { llmFetch } from "./llm-http";
 import type { ApiConfig } from "./settings-types";
 import { pushApiLog } from "./api-log-store";
 import {
@@ -72,7 +72,7 @@ async function simpleLLMStreamCall(
     };
 
     try {
-        const res = await fetch(request.url, {
+        const res = await llmfetch(request.url, {
             method: "POST",
             headers: request.headers,
             body: request.body,
