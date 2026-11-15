@@ -1,5 +1,5 @@
 "use client";
-
+import { llmFetch } from "../../lib/llm-http";
 import { useState, useEffect, useCallback, useContext } from "react";
 import { Plus, RefreshCw, Rss, AlertCircle, FileEdit, Trash2, X, Check } from "lucide-react";
 import { SettingsContext } from "../phone-settings-app";
@@ -134,7 +134,7 @@ export function ApiSettings() {
             const headers: Record<string, string> = { "Content-Type": "application/json" };
             if (!isGoogleNative) headers["Authorization"] = `Bearer ${config.apiKey}`;
 
-            const response = await fetch(url, { method: "GET", headers });
+            const response = await llmFetch(url, { method: "GET", headers });
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
